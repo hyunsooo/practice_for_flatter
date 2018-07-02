@@ -10,7 +10,7 @@ class GettingStartedApp extends StatelessWidget {
         // home: new Center ( child: new Text("Centered Text") )
         home: new Scaffold(
             appBar: new AppBar(
-              title: new Text("HYUNSOO Bar Title"),
+              title: new Text("HYUNSOO's Bar Title"),
             ),
             body: new HomeWidget()));
   }
