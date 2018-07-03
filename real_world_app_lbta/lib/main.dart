@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'dart:io';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import './views/video_cell.dart';
 
 void main() => runApp(new RealWorldApp());
 
@@ -14,7 +14,7 @@ class RealWorldApp extends StatefulWidget {
 
 class RealWorldState extends State<StatefulWidget> {
   var _isLoading = true;  // using underscore means private variable
-
+  var videos;
   _fetchData() async {
     print("Attempting to fetch data from network");
 
@@ -26,9 +26,14 @@ class RealWorldState extends State<StatefulWidget> {
 
       final map = json.decode(response.body);
       final videosJson = map["videos"];
+      
+      // videosJson.forEach((video) {
+      //   print(video["name"]);
+      // });
 
-      videosJson.forEach((video) {
-        print(video["name"]);
+      setState(() {
+         _isLoading = false;
+         this.videos = videosJson;
       });
       // print(map["videos"]);
     }
@@ -46,7 +51,7 @@ class RealWorldState extends State<StatefulWidget> {
               onPressed: () {
                 print("Reloading..."); 
                 setState(() {
-                  _isLoading = false;           
+                  _isLoading = true;           
                 });
                 _fetchData();
               },)
@@ -54,10 +59,39 @@ class RealWorldState extends State<StatefulWidget> {
           ),
           body: new Center(
             child: _isLoading ? new CircularProgressIndicator() 
-            : new Text("Finished Loading!!!!!!!!!!!.."),
-
+            : new ListView.builder(
+              itemCount: this.videos != null ? this.videos.length : 0,
+              itemBuilder: (context, i) {
+                final video = this.videos[i];
+                return new FlatButton(
+                  child: new VideoCell(video),
+                  onPressed: () {
+                    print("Video cell tapped: $i"); 
+                    Navigator.push(context, 
+                      new MaterialPageRoute(
+                        builder: (context) => new DetailPage()
+                      )
+                    );
+                  },
+                );  
+              },
+            )
           )
         )
+      );
+    }
+}
+
+class DetailPage extends StatelessWidget {
+  @override
+    Widget build(BuildContext context) {
+      return new Scaffold(
+        appBar: new AppBar(
+          title: new Text("Detail page"),
+        ),
+        body: new Center (
+         child: new Text("Detail blahblah"),
+        ),
       );
     }
 }
